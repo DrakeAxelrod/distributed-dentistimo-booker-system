@@ -15,7 +15,6 @@
   "author": "DIT355-Team-16",
   "license": "ISC",
   "dependencies": {
-    "aedes": "latest",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
