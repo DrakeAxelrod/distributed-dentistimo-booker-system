@@ -5,7 +5,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "demo": "node ./src/test/websocket.js"
   },
@@ -23,5 +23,8 @@
     "mongoose": "^6.0.13",
     "mqtt": "^4.2.8",
     "websocket-stream": "^5.5.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
   }
 }
