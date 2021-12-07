@@ -1,8 +1,3 @@
-let express = require('express')
-let mongoose = require('mongoose')
-let cors = require('cors')
-let path = require('path')
-let bodyParser = require('body-parser')
 require('dotenv').config()
 
 const { log } = console;
@@ -33,7 +28,7 @@ client.on("message", (topic, message) => {
     client.end();
   }
 });
-
+/*
 let databaseVariable = process.env.MONGODB_URI
 let port = process.env.port || 3000
 
@@ -59,3 +54,4 @@ bookingApp.listen(port, (error) => {
 })
 
 module.exports = bookingApp;
+*/
