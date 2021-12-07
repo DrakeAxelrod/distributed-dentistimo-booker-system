@@ -1,3 +1,4 @@
 module.exports = {
-    bookings: require("./bookings")
+    bookings: require("./bookings"),
+    clinics: require("./clinics")
 }
