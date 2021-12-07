@@ -11,6 +11,8 @@ client.subscribe(basePath)
 const topics = [
     { topic: "book", qos: 0 },
     { topic: "check", qos: 0 },
+    { topic: "initiate", qos: 0},
+    { topic: "all", qos: 0 }
 ];
 // loop subscribe
 topics.forEach(route => {
@@ -20,30 +22,39 @@ topics.forEach(route => {
 
 // emit the topic
 client.on("message", (t, m) => {
-    const msg = JSON.parse(m.toString())
+    const msg = m.toString()
+
     const topic = t.replace(basePath + "/", "");
-    //log(topic)
-    if (topic === "api/bookings") {
-        client.emit("/")
-    } else {
-        client.emit(topic, msg)
-    }
+
+    client.emit(topic, msg)
 });
 
 // this is where routes go
 // so you listen for the topic and call relevant controller functions
-client.on('/createAppointment', async() => {
-    const res = await controllers.bookings.createAppointment()
+client.on('confirmAppointment', async() => {
+    const booking = await controllers.bookings.confirmAppointment()
+    client.publish(responsePath, Buffer.from(bookin))
+})
+
+client.on('initiate', async() => {
+    const res = await controllers.bookings.reserveAppointment()
     client.publish(responsePath, Buffer.from(res))
 })
 
-client.on("/", async () => {
-    const res = await controllers.bookings.allAppointments()
+client.on("all", async () => {
+    const res = await controllers.bookings.allAppointments().then(res => res).catch((error) => {
+        if (error) {
+            console.log(error)
+        }
+    })
+
+
     // log(res)
     // send back to gateway
-    client.publish(responsePath, Buffer.from(res))
-})
 
+
+    client.publish(responsePath + '/all', JSON.stringify(res))
+})
 
 
 module.export = client;

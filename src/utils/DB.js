@@ -6,6 +6,7 @@ const connect = () => {
     mongoose.connect(uri, {}, (err) => {
         if (!err) {
             log(`Connected to MongoDB`);
+            log(`BookerDB: ${process.env.MONGODB_URI}`)
         } else {
             console.error(`Failed to connect to MongoDB`);
             console.error(err.stack);
