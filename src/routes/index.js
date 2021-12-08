@@ -10,8 +10,8 @@ client.subscribe(basePath)
 // add topics to listen to
 const topics = [
     { topic: "book", qos: 0 },
-    { topic: "check", qos: 0 },
-    { topic: "initiate", qos: 0},
+    // { topic: "check", qos: 0 },
+    // { topic: "initiate", qos: 0},
     { topic: "all", qos: 0 }
 ];
 // loop subscribe
@@ -33,16 +33,16 @@ client.on("message", (t, m) => {
 // so you listen for the topic and call relevant controller functions
 client.on('confirmAppointment', async() => {
     const booking = await controllers.bookings.confirmAppointment()
-    client.publish(responsePath, Buffer.from(bookin))
+    client.publish(responsePath, Buffer.from(booking))
 })
 
-client.on('initiate', async() => {
-    const res = await controllers.bookings.reserveAppointment()
-    client.publish(responsePath, Buffer.from(res))
-})
+// client.on('initiate', async() => {
+//     const res = await controllers.bookings.reserveAppointment()
+//     client.publish(responsePath, Buffer.from(res))
+// })
 
-client.on("all", async () => {
-    const res = await controllers.bookings.allAppointments().then(res => res).catch((error) => {
+client.on("all", async (m) => {
+    const res = await controllers.bookings.allAppointments(m).then(res => res).catch((error) => {
         if (error) {
             console.log(error)
         }
@@ -51,8 +51,6 @@ client.on("all", async () => {
 
     // log(res)
     // send back to gateway
-
-
     client.publish(responsePath + '/all', JSON.stringify(res))
 })
 
