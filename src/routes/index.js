@@ -1,13 +1,20 @@
 const client = require("../utils/Client")
 const controllers = require("../controllers");
-const { log } = console;
+const CircuitBreaker = require("opossum");
+
+const options = {
+  timeout: 3000, // If our function takes longer than 3 seconds, trigger a failure
+  errorThresholdPercentage: 50, // When 50% of requests fail, trip the circuit
+  resetTimeout: 30000, // After 30 seconds, try again.
+};
+
 
 const basePath = "api/bookings"
 const responsePath = "api/gateway/bookings"
 
 client.subscribe(basePath)
 const topics = [
-    { topic: "book", qos: 0 },
+    { topic: "confirm", qos: 0 },
     { topic: "all", qos: 0 },
     { topic: "available", qos: 0 }
 ];
@@ -18,22 +25,22 @@ topics.forEach(route => {
 client.on("message", (t, m) => {
     const msg = m.toString()
     const topic = t.replace(basePath + "/", "");
-    client.emit(topic, msg)
+    const breaker = new CircuitBreaker(client.emit(topic, msg), options);
+    const result = breaker.fire().then(res => res).catch(console.error)
+    //client.emit(topic, msg)
 });
 
-client.on('confirmAppointment', async() => {
-    const booking = await controllers.bookings.confirmAppointment()
-    client.publish(responsePath, Buffer.from(booking))
-})
-
-client.on("all", async (m) => {
-  console.log("implement if needed")
-    // const res = await controllers.bookings.allAppointments(m).then(res => res).catch((error) => {
-    //     if (error) {
-    //         console.log(error)
-    //     }
-    // })
-    // client.publish(responsePath + '/all', JSON.stringify(res))
+client.on('confirm', async(m) => {
+    const booking = await controllers.bookings.confirmAppointment(m)
+    const breaker = new CircuitBreaker(
+      client.publish(responsePath + "/confirm", booking),
+      options
+    );
+    const result = breaker
+        .fire()
+        .then((res) => res)
+        .catch(console.error);
+    //client.publish(responsePath + "/confirm", booking)
 })
 
 client.on("available", async (m) => {
@@ -45,7 +52,15 @@ client.on("available", async (m) => {
         console.log(error);
       }
     });
-  client.publish(responsePath + "/available", JSON.stringify(res));
+  const breaker = new CircuitBreaker(
+    client.publish(responsePath + "/available", res),
+    options
+  );
+  const result = breaker
+        .fire()
+        .then((res) => res)
+        .catch(console.error);
+  //client.publish(responsePath + "/available", JSON.stringify(res));
 });
 
 module.export = client;

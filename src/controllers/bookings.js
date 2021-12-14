@@ -4,8 +4,8 @@ const clinics = require("../models").clinics;
 const parseDate = (day) => {
   //'10:00-16:00'
   const times = day.split("-");
-  start = times[0].split(":");
-  end = times[1].split(":");
+  const start = times[0].split(":");
+  const end = times[1].split(":");
   return {
     start: {
       hour: start[0],
@@ -68,23 +68,20 @@ const getAllBookingsForDay = (msg, booked) => {
 };
 
 const findClinic = async (name) => {
-  return await clinics.find({ name: name });
-};
-const confirmAppointment = async (m) => {
-  const clinic = await findClinic(m.clinic);
-  const booking = await bookings.create({
-    clinic: clinic.id,
-    patient: m.patient,
-    time: m.time,
-    date: m.date,
-  });
-  reservations[booking.id] = reserveBooking(booking.id);
-  return booking;
-  // clearTimeout(reservations[m.id])
+  return await clinics.findOne({ name: name })
 };
 
-const allAppointments = async (m) => {
-  console.log("implement this...");
+const confirmAppointment = async (m) => {
+  const obj = JSON.parse(m)
+  const clinic = await findClinic(obj.clinic);
+  const booking = await bookings.create({
+    clinic: clinic._id,
+    patient: obj.patient,
+    time: obj.time,
+    date: obj.date,
+  });
+  booking.clinic = clinic
+  return JSON.stringify(booking);
 };
 
 const allAvailableForDayAppointments = async (m) => {
@@ -101,25 +98,18 @@ const allAvailableForDayAppointments = async (m) => {
     if (sameName && sameDate) return booked;
   });
   const available = getAllBookingsForDay(msg, bookedAppointments);
-  available.forEach(e => console.log(e.time.start))
-  return available;
+  //available.forEach(e => console.log(e.time.start))
+  return JSON.stringify(available);
 };
 
-// const reserveAppointment = async (m) => {
-//     const clinic = await findClinic(m.clinic)
-//     const booking = await bookings.create({
-//         clinic: clinic.id,
-//         patient: m.patient,
-//         time: m.time,
-//         date: m.date,
-//     })
-//     reservations[booking.id] = reserveBooking(booking.id)
-//     return booking
-// }
+const isClinics = async () => {
+  const res = await clinics.find({})
+  return res.length > 0
+}
 
 module.exports = {
-  allAppointments: allAppointments,
   confirmAppointment: confirmAppointment,
   allAvailableForDayAppointments: allAvailableForDayAppointments,
+  isClinics: isClinics
   // reserveAppointment: reserveAppointment
 };

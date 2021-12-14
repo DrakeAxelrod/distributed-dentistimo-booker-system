@@ -6,13 +6,16 @@ const schema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: "Clinics"
     },
-    reserved: {
-        type: Boolean,
-        default: false,
-    },
+    // reserved: {
+    //     type: Boolean,
+    //     default: false,
+    // },
     patient: {
         email: { type: String },
-        name: { type: String },
+        name: { 
+            first: { type: String },
+            last: { type: String }
+         },
         personalNumber: { type: String },
         phone: { type: Number },
     },
@@ -44,8 +47,8 @@ const schema = new mongoose.Schema({
     },
     issuance: { 
         type: Date, 
-        default: Date.now() 
+        default: Date.now()
     }
 })
 
-module.exports = mongoose.model('Booker', schema)
+module.exports = mongoose.model('Bookings', schema)

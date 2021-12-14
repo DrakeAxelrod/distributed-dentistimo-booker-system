@@ -1,5 +1,13 @@
 require('dotenv').config()
-const model = require("./src/models").clinics
 require('./src/routes')
-require('./src/utils/DB').connect()
-const axios = require("axios")
+require("./src/utils/DB").connect();
+const controllers = require("./src/controllers")
+const populateClinics = require("./src/utils/populateClinics");
+
+const popClinicsIfNeeded = async () => {
+  const exists = await controllers.bookings.isClinics()
+  if (!exists) {
+    populateClinics()
+  }
+}
+popClinicsIfNeeded()
