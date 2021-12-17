@@ -26,19 +26,15 @@ const confirmAppointment = async (m) => {
   return JSON.stringify(allBookings);
 };
 
+
+
 const allBookedAppointments = async (m) => {
   const msg = JSON.parse(m);
   const res = await bookings.find().populate("clinic").then(res => res).catch(err => []);
   return JSON.stringify({ message: msg, booked: res });
 };
 
-const isClinics = async () => {
-  const res = await clinics.find({})
-  return res.length > 0
-}
-
 module.exports = {
   confirmAppointment: confirmAppointment,
   allBookedAppointments: allBookedAppointments,
-  isClinics: isClinics
 };

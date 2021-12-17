@@ -20,6 +20,7 @@ const parseDate = (day) => {
     },
   };
 };
+
 const getClinics = async () => {
   const res = await axios.get(clinic_uri);
   const { dentists } = res.data;
@@ -48,4 +49,5 @@ const getClinics = async () => {
     });
   });
 };
+
 module.exports = getClinics;

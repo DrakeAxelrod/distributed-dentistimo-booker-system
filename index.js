@@ -1,13 +1,17 @@
 require('dotenv').config()
 require('./src/routes')
-require("./src/utils/DB").connect();
-const controllers = require("./src/controllers")
+const db = require("./src/utils/DB");
+
 const populateClinics = require("./src/utils/populateClinics");
 
-const popClinicsIfNeeded = async () => {
-  const exists = await controllers.bookings.isClinics()
-  if (!exists) {
-    populateClinics()
-  }
+const refreshClinics = async () => {
+  db.connection.db.dropCollection("clinics", (err, result) => {
+    if (err) {
+      console.log(err)
+    } else {
+      populateClinics();
+    }
+  });
 }
-popClinicsIfNeeded()
+
+setInterval(refreshClinics, 60000);
