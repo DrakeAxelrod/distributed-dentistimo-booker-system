@@ -31,6 +31,7 @@ const confirmAppointment = async (m) => {
 const allBookedAppointments = async (m) => {
   const msg = JSON.parse(m);
   const res = await bookings.find().populate("clinic").then(res => res).catch(err => []);
+  console.log(res)
   return JSON.stringify({ message: msg, booked: res });
 };
 
