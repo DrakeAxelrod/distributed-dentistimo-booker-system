@@ -12,4 +12,4 @@ appointment booking system
 - [Johan Axell](https://git.chalmers.se/johanaxe)
 - [Asiya Ismail](https://git.chalmers.se/asiya)
 
-link 👉 [Documentation](https://github.com/DrakeAxelrod/distributed-dentistimo-documentation)
+## link 👉 [Documentation](https://github.com/DrakeAxelrod/distributed-dentistimo-documentation)
